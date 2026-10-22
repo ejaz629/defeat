@@ -10,24 +10,30 @@ DEFEAT groups causally related Windows file I/O events into **File Event Gadgets
 
 ---
 
-## Contents
+## Repository Structure
 
-| File | Description |
-|---|---|
-| `file_gadgets.json.zip` | FEGs extracted from ransomware and benign executions (compressed). |
-| `enc_file_gadgets.json` | FEGs of interest from encryption-related activity. |
-| `screen_locker_like_file_gadgets.json(.zip)` | FEGs from screen-locker-like samples. |
-| `testdataset.json` | Held-out test set used in the evaluation. |
-| `evaluate_unseen.py` | Evaluates DEFEAT on the unseen ransomware families. |
-| `main_bert_file_io_patterns.py` | <!-- TODO: describe what this script does --> |
+```
+DEFEAT/
+├── dataset/                              # All dataset files
+│   ├── file_gadgets.json.zip            # FEGs extracted from ransomware & benign executions (compressed)
+│   ├── enc_file_gadgets.json            # FEGs of interest from encryption-related activity
+│   ├── screen_locker_like_file_gadgets.json.zip  # FEGs from screen-locker-like samples
+│   ├── testdataset.json                 # Held-out test set for evaluation
+│   ├── cln_graphs_features.json         # Clean graph embeddings (589 MB)
+│   ├── mal_graphs_features.json         # Malware graph embeddings (212 MB)
+│   └── unseen_graphs_features.json      # Unseen samples graph embeddings (51 MB)
+├── code/                                 # Analysis and evaluation scripts
+│   ├── evaluate_unseen.py               # Evaluates DEFEAT on unseen ransomware families
+│   └── main_bert_file_io_patterns.py    # Graph embedding and pattern analysis
+├── README.md                             # This file
+└── LICENSE                               # License information
+```
 
-<!-- TODO: check each description above against the actual file contents. -->
-
-## Dataset
+## Dataset Overview
 
 The dataset was collected with a kernel-level ETW (Event Tracing for Windows) monitor in isolated VirtualBox VMs running Windows 10 (64-bit).
 
-| Dataset | Samples | File I/O events | FEGs | FEGs of interest |
+| Dataset | Samples | File I/O Events | FEGs | FEGs of Interest |
 |---|---|---|---|---|
 | Malicious | 292 | 36,727,555 | 505,203 | 19,988 |
 | Benign | 46 | 43,431,886 | 51,048 | 956 |
@@ -36,9 +42,17 @@ The dataset was collected with a kernel-level ETW (Event Tracing for Windows) mo
 
 The ransomware samples cover 67 families (see Table 6 in the paper's appendix), plus 24 unseen families used only for evaluation.
 
-**What the data contains:** only kernel-level file operation metadata (event type, file key, timestamps, I/O sizes). It contains no file contents, no personally identifiable information, and no malware binaries.
+### Dataset Contents
 
-<!-- TODO: if the full raw ETW logs (~38 GB) are hosted elsewhere (e.g., Zenodo or CSIRO DAP), add the link here. -->
+- **`file_gadgets.json.zip`**: Complete FEGs extracted from ransomware and benign samples (~243 MB uncompressed)
+- **`enc_file_gadgets.json`**: Subset of FEGs of interest from encryption-related activity
+- **`screen_locker_like_file_gadgets.json.zip`**: FEGs from screen-locker-like ransomware samples
+- **`testdataset.json`**: Held-out test set used in the paper's evaluation
+- **`cln_graphs_features.json`**: Pre-computed graph embeddings for clean/benign samples
+- **`mal_graphs_features.json`**: Pre-computed graph embeddings for malware samples
+- **`unseen_graphs_features.json`**: Pre-computed graph embeddings for unseen ransomware families
+
+**What the data contains:** only kernel-level file operation metadata (event type, file key, timestamps, I/O sizes). It contains no file contents, no personally identifiable information, and no malware binaries.
 
 ### Data format
 
@@ -55,28 +69,34 @@ Each FEG is a JSON object. <!-- TODO: replace with a real example from file_gadg
 }
 ```
 
-## Getting started
+## Quick Start
 
 ### Requirements
 
 - Python 3.8+
-- <!-- TODO: list packages, ideally in a requirements.txt -->
+- NumPy, Pandas, scikit-learn (see code files for exact dependencies)
+
+### Setup
 
 ```bash
 git clone https://github.com/ejaz629/defeat.git
 cd defeat
-pip install -r requirements.txt
-unzip file_gadgets.json.zip
+
+# Extract the main dataset
+unzip dataset/file_gadgets.json.zip -d dataset/
 ```
 
 ### Usage
 
+**Evaluate on unseen ransomware families:**
 ```bash
-# Evaluate on unseen ransomware families
-python evaluate_unseen.py
+python code/evaluate_unseen.py
 ```
 
-<!-- TODO: add the commands for training the graph embedding model and running clustering, with expected outputs. -->
+**Analyze file I/O patterns and train graph embeddings:**
+```bash
+python code/main_bert_file_io_patterns.py
+```
 
 ## Pipeline overview
 
