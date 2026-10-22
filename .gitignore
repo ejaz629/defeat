@@ -7,3 +7,5 @@ dataset/*_graphs_features.json
 *.py
 checkpoints/
 dataset/*_graphs_features.json
+code/
+defeat_model.zip
