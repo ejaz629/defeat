@@ -1,3 +1,6 @@
 checkpoints/
 dataset/mal_graphs_features.json
 dataset/unseen_graphs_features.json
+*.py
+checkpoints/
+dataset/*_graphs_features.json
